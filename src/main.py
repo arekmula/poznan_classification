@@ -20,7 +20,7 @@ def load_dataset(dataset_dir_path: Path) -> Tuple[np.ndarray, np.ndarray]:
 
 
 def convert_descriptor_to_histogram(descriptors, vocab_model, normalize=True) -> np.ndarray:
-    features_words = vocab_model.predict(descriptors)
+    features_words = vocab_model.predict(descriptors)  # KMeans returns indexes of words
     histogram = np.zeros(vocab_model.n_clusters, dtype=np.float32)
     unique, counts = np.unique(features_words, return_counts=True)
     histogram[unique] += counts
@@ -29,11 +29,10 @@ def convert_descriptor_to_histogram(descriptors, vocab_model, normalize=True) ->
     return histogram
 
 
-def apply_feature_transform(
-        data: np.ndarray,
-        feature_detector_descriptor,
-        vocab_model
-) -> np.ndarray:
+def apply_feature_transform(data: np.ndarray,
+                            feature_detector_descriptor,
+                            vocab_model
+                            ) -> np.ndarray:
     data_transformed = []
     for image in data:
         keypoints, image_descriptors = feature_detector_descriptor.detectAndCompute(image, None)
@@ -54,13 +53,13 @@ def project():
     first_name = 'Arkadiusz'
     last_name = 'Mula'
 
-    data_path = Path('../train/')  # You can change the path here
+    data_path = Path('../../train/')  # You can change the path here
     data_path = os.getenv('DATA_PATH', data_path)  # Don't change that line
     x, y = load_dataset(data_path)
     x = data_processing(x)
 
     # TODO: create a detector/descriptor here. Eg. cv2.AKAZE_create()
-    feature_detector_descriptor = None
+    feature_detector_descriptor = cv2.AKAZE_create()
 
     # TODO: train a vocabulary model and save it using pickle.dump function
     with Path('vocab_model.p').open('rb') as vocab_file:  # Don't change the path here
