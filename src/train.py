@@ -18,7 +18,7 @@ def data_processing(x: np.ndarray) -> np.ndarray:
     print("Processing data")
     images_resized = []
     for image in x:
-        image_resized = cv2.resize(image, (800, 600))  # TODO: Check smaller sizes
+        image_resized = cv2.resize(image, (1200, 1000))  # TODO: Check smaller sizes
         images_resized.append(image_resized)
 
     return np.asarray(images_resized)
