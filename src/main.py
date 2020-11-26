@@ -9,10 +9,11 @@ import numpy as np
 
 
 def load_dataset(dataset_dir_path: Path) -> Tuple[np.ndarray, np.ndarray]:
+    print("Loading dataset")
     x, y = [], []
-    for i, class_dir in enumerate(dataset_dir_path.iterdir()):
+    for i, class_dir in enumerate(sorted(dataset_dir_path.iterdir())):
         for file in class_dir.iterdir():
-            img_file = cv2.imread(str(file), cv2.IMREAD_GRAYSCALE)
+            img_file = cv2.imread(str(file))  # TODO: Check if reading as GRAYSCALE image isn't better
             x.append(img_file)
             y.append(i)
 
@@ -42,8 +43,13 @@ def apply_feature_transform(data: np.ndarray,
 
 
 def data_processing(x: np.ndarray) -> np.ndarray:
-    # TODO: add data processing here
-    return x
+    print("Processing data")
+    images_resized = []
+    for image in x:
+        image_resized = cv2.resize(image, (800, 600))  # TODO: Check smaller sizes
+        images_resized.append(image_resized)
+
+    return np.asarray(images_resized)
 
 
 def project():
@@ -53,7 +59,7 @@ def project():
     first_name = 'Arkadiusz'
     last_name = 'Mula'
 
-    data_path = Path('../../train/')  # You can change the path here
+    data_path = Path('../../test')  # You can change the path here
     data_path = os.getenv('DATA_PATH', data_path)  # Don't change that line
     x, y = load_dataset(data_path)
     x = data_processing(x)

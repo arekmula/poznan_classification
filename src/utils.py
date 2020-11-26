@@ -6,6 +6,7 @@ import numpy as np
 
 
 def load_dataset(dataset_dir_path: Path) -> Tuple[np.ndarray, np.ndarray]:
+    print("Loading dataset")
     x, y = [], []
     for i, class_dir in enumerate(sorted(dataset_dir_path.iterdir())):
         for file in class_dir.iterdir():
@@ -18,6 +19,6 @@ def load_dataset(dataset_dir_path: Path) -> Tuple[np.ndarray, np.ndarray]:
 
 def show_images_and_labels(images, labels):
     for image, label in zip(images, labels):
-        cv2.imshow("asd", image)
+        cv2.imshow("image", image)
         print(label)
         cv2.waitKey()

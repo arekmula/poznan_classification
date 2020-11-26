@@ -9,11 +9,13 @@ import numpy as np
 from sklearn import cluster
 from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
+from sklearn import svm
 
 from src import utils
 
 
 def data_processing(x: np.ndarray) -> np.ndarray:
+    print("Processing data")
     images_resized = []
     for image in x:
         image_resized = cv2.resize(image, (800, 600))  # TODO: Check smaller sizes
@@ -22,10 +24,12 @@ def data_processing(x: np.ndarray) -> np.ndarray:
     return np.asarray(images_resized)
 
 
-def create_vocab_model(train_descriptors, nb_words=20):
+def create_vocab_model(train_descriptors, nb_words=64):
+    print("Creating vocab model")
     kmeans = cluster.KMeans(n_clusters=nb_words, random_state=42)
     kmeans.fit(train_descriptors)
-    pickle.dump(kmeans, open("vocab_model.p", "wb"))
+    # pickle.dump(kmeans, open("vocab_model.p", "wb"))
+    return kmeans
 
 
 def convert_descriptor_to_histogram(descriptors, vocab_model, normalize=True) -> np.ndarray:
@@ -42,6 +46,7 @@ def apply_feature_transform(data: np.ndarray,
                             feature_detector_descriptor,
                             vocab_model
                             ) -> np.ndarray:
+    print("Applying future transform")
     data_transformed = []
     for image in data:
         keypoints, image_descriptors = feature_detector_descriptor.detectAndCompute(image, None)
@@ -58,14 +63,12 @@ def train():
     images = data_processing(images)
 
     # utils.show_images_and_labels(x, y)
-    train_images, test_images, train_labels, test_labels = train_test_split(images, labels, train_size=0.6,
+    train_images, test_images, train_labels, test_labels = train_test_split(images, labels, train_size=0.8,
                                                                             random_state=42, stratify=labels)
-    test_images, valid_images, test_labels, valid_labels = train_test_split(test_images, test_labels, train_size=0.5,
-                                                                            random_state=42, stratify=test_labels)
 
     feature_detector_descriptor = cv2.AKAZE_create()  # TODO: Check different parameters
 
-    # Uncomment if you want to create new vocab model
+    # Uncomment lines below if you want to create new vocab model
     # train_descriptors = []
     # for image in train_images:
     #     # TODO: Moze sprawdz maske binarna na srodku obrazu
@@ -74,8 +77,6 @@ def train():
     #     # podaliśmy tam wartość None.
     #     for descriptor in feature_detector_descriptor.detectAndCompute(image, None)[1]:
     #         train_descriptors.append(descriptor)
-
-    # Uncomment if you want to create new vocab model
     # create_vocab_model(train_descriptors)
 
     with Path('vocab_model.p').open('rb') as vocab_file:  # Don't change the path here
@@ -87,14 +88,10 @@ def train():
     X_test = apply_feature_transform(test_images, feature_detector_descriptor, vocab_model)
     y_test = test_labels
 
-    X_valid = apply_feature_transform(valid_images, feature_detector_descriptor, vocab_model)
-    y_valid = valid_labels
-
-    classifier = DecisionTreeClassifier()
+    classifier = svm.SVC()
     classifier.fit(X_train, y_train)
     # print(classifier.score(X_train, y_train))
     print(classifier.score(X_test, y_test))
-    print(classifier.score(X_valid, y_valid))
 
 
 if __name__ == "__main__":
