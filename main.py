@@ -58,7 +58,7 @@ def project():
     first_name = 'Arkadiusz'
     last_name = 'Mula'
 
-    data_path = Path('../../test')  # You can change the path here
+    data_path = Path('../test')  # You can change the path here
     data_path = os.getenv('DATA_PATH', data_path)  # Don't change that line
     x, y = load_dataset(data_path)
     x = data_processing(x)

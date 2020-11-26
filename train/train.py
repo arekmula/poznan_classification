@@ -1,24 +1,21 @@
-import json
 import os
 import pickle
 from pathlib import Path
-from typing import Tuple
 
 import cv2
 import numpy as np
 from sklearn import cluster
 from sklearn.model_selection import train_test_split
-from sklearn.tree import DecisionTreeClassifier
 from sklearn import svm
 
-from src import utils
+from train import utils
 
 
 def data_processing(x: np.ndarray) -> np.ndarray:
     print("Processing data")
     images_resized = []
     for image in x:
-        image_resized = cv2.resize(image, (1200, 1000))  # TODO: Check smaller sizes
+        image_resized = cv2.resize(image, (1200, 1000))
         images_resized.append(image_resized)
 
     return np.asarray(images_resized)
@@ -28,7 +25,7 @@ def create_vocab_model(train_descriptors, nb_words=64):
     print("Creating vocab model")
     kmeans = cluster.KMeans(n_clusters=nb_words, random_state=42)
     kmeans.fit(train_descriptors)
-    # pickle.dump(kmeans, open("vocab_model.p", "wb"))
+    pickle.dump(kmeans, open("vocab_model.p", "wb"))
     return kmeans
 
 
@@ -46,7 +43,7 @@ def apply_feature_transform(data: np.ndarray,
                             feature_detector_descriptor,
                             vocab_model
                             ) -> np.ndarray:
-    print("Applying future transform")
+    print("Applying feature transform")
     data_transformed = []
     for image in data:
         keypoints, image_descriptors = feature_detector_descriptor.detectAndCompute(image, None)
@@ -66,21 +63,13 @@ def train():
     train_images, test_images, train_labels, test_labels = train_test_split(images, labels, train_size=0.8,
                                                                             random_state=42, stratify=labels)
 
-    feature_detector_descriptor = cv2.AKAZE_create()  # TODO: Check different parameters
+    feature_detector_descriptor = cv2.AKAZE_create()
 
-    # Uncomment lines below if you want to create new vocab model
-    # train_descriptors = []
-    # for image in train_images:
-    #     # TODO: Moze sprawdz maske binarna na srodku obrazu
-    #     # Drugim argumentem może być maska binarna, która służy do zawężenia obszaru z którego
-    #     # uzyskujemy punkty kluczowe/deskryptor – jako, że nam akurat zależy na całym obrazie,
-    #     # podaliśmy tam wartość None.
-    #     for descriptor in feature_detector_descriptor.detectAndCompute(image, None)[1]:
-    #         train_descriptors.append(descriptor)
-    # create_vocab_model(train_descriptors)
-
-    with Path('vocab_model.p').open('rb') as vocab_file:  # Don't change the path here
-        vocab_model = pickle.load(vocab_file)
+    train_descriptors = []
+    for image in train_images:
+        for descriptor in feature_detector_descriptor.detectAndCompute(image, None)[1]:
+            train_descriptors.append(descriptor)
+    vocab_model = create_vocab_model(train_descriptors)
 
     X_train = apply_feature_transform(train_images, feature_detector_descriptor, vocab_model)
     y_train = train_labels
@@ -90,8 +79,9 @@ def train():
 
     classifier = svm.SVC()
     classifier.fit(X_train, y_train)
-    # print(classifier.score(X_train, y_train))
     print(classifier.score(X_test, y_test))
+
+    pickle.dump(classifier, open("clf.p", "wb"))
 
 
 if __name__ == "__main__":
