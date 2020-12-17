@@ -8,7 +8,11 @@ The goal of the project was to recognize most popular places from Poznań using 
 <img src="https://bi.im-g.pl/im/22/b1/f6/z16167202V,Okraglak.jpg" width="350">
 
 The training dataset was provided by a lecturer. It contained 32 images per class -> 160 images. I've used only those
- images and scored 96% on a evaluation set and 85% on test set. 
+ images to train and I haven't used any data augmentation.
+
+## Results:
+- private test set: 96%
+- final, unknown, lecturer test set: 90%
 
 ## Project requirements
 - Python 3.8
@@ -16,6 +20,7 @@ The training dataset was provided by a lecturer. It contained 32 images per clas
 
 ## Usage
 In the `train` folder you can find jupyter notebook and python script. You can use any of them to train your vocabulary
- model and classificator.
+ model and classificator. **Note that training the vocabulary model might take long.**
+
 In the main folder you can find vocabulary model and classificator that was already trained by me.
 Run `main.py` to test the model and classificator. 

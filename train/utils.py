@@ -10,7 +10,7 @@ def load_dataset(dataset_dir_path: Path) -> Tuple[np.ndarray, np.ndarray]:
     x, y = [], []
     for i, class_dir in enumerate(sorted(dataset_dir_path.iterdir())):
         for file in class_dir.iterdir():
-            img_file = cv2.imread(str(file))  # TODO: Check if reading as GRAYSCALE image isn't better
+            img_file = cv2.imread(str(file))
             x.append(img_file)
             y.append(i)
 
