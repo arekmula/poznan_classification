@@ -13,7 +13,7 @@ def load_dataset(dataset_dir_path: Path) -> Tuple[np.ndarray, np.ndarray]:
     x, y = [], []
     for i, class_dir in enumerate(sorted(dataset_dir_path.iterdir())):
         for file in class_dir.iterdir():
-            img_file = cv2.imread(str(file))  # TODO: Check if reading as GRAYSCALE image isn't better
+            img_file = cv2.imread(str(file))
             x.append(img_file)
             y.append(i)
 
@@ -46,7 +46,7 @@ def data_processing(x: np.ndarray) -> np.ndarray:
     print("Processing data")
     images_resized = []
     for image in x:
-        image_resized = cv2.resize(image, (1200, 1000))  # TODO: Check smaller sizes
+        image_resized = cv2.resize(image, (1200, 1000))
         images_resized.append(image_resized)
 
     return np.asarray(images_resized)

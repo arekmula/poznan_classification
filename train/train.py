@@ -8,7 +8,7 @@ from sklearn import cluster
 from sklearn.model_selection import train_test_split
 from sklearn import svm
 
-from train import utils
+import utils
 
 
 def data_processing(x: np.ndarray) -> np.ndarray:
@@ -53,12 +53,12 @@ def apply_feature_transform(data: np.ndarray,
 
 
 def train():
-    data_path = Path('../../train/')  # You can change the path here
-    data_path = os.getenv('DATA_PATH', data_path)  # Don't change that line
+    data_path = Path('../../train_poznan_classification/')  # You can change the path here
     images, labels = utils.load_dataset(data_path)
 
     images = data_processing(images)
 
+    # uncomment this function if you want to see your dataset
     # utils.show_images_and_labels(x, y)
     train_images, test_images, train_labels, test_labels = train_test_split(images, labels, train_size=0.8,
                                                                             random_state=42, stratify=labels)
@@ -77,7 +77,7 @@ def train():
     X_test = apply_feature_transform(test_images, feature_detector_descriptor, vocab_model)
     y_test = test_labels
 
-    classifier = svm.SVC()
+    classifier = svm.SVC(kernel="poly")
     classifier.fit(X_train, y_train)
     print(classifier.score(X_test, y_test))
 
